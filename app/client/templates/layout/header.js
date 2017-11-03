@@ -44,7 +44,7 @@ Template['layout_header'].helpers({
 
         // set total balance in Mist menu, of no pending confirmation is Present
         if(typeof mist !== 'undefined' && !PendingConfirmations.findOne({operation: {$exists: true}})) {
-            mist.menu.setBadge(EthTools.formatBalance(balance, '0.00 a','ether') + ' ETC');
+            mist.menu.setBadge(EthTools.formatBalance(balance, '0.00 a','ether') + ' ELLA');
         }
 
         return balance;
@@ -64,9 +64,9 @@ Template['layout_header'].helpers({
     @method (timeSinceBlock)
     */
     'timeSinceBlock': function () {
-        
-        if (EthBlocks.latest.timestamp == 0 
-            || typeof EthBlocks.latest.timestamp == 'undefined')   
+
+        if (EthBlocks.latest.timestamp == 0
+            || typeof EthBlocks.latest.timestamp == 'undefined')
             return false;
 
         var timeSince = moment(EthBlocks.latest.timestamp, "X");
@@ -93,9 +93,9 @@ Template['layout_header'].helpers({
     @method (timeSinceBlockText)
     */
     'timeSinceBlockText': function () {
-        
-        if (EthBlocks.latest.timestamp == 0 
-            || typeof EthBlocks.latest.timestamp == 'undefined')   
+
+        if (EthBlocks.latest.timestamp == 0
+            || typeof EthBlocks.latest.timestamp == 'undefined')
             return TAPi18n.__('wallet.app.texts.waitingForBlocks');
 
         var timeSince = moment(EthBlocks.latest.timestamp, "X");
