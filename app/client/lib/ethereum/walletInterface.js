@@ -40,7 +40,7 @@ web3.eth.getBlock(0, function(e, res){
                 Session.set('network', 'main');
                 break;
             default:
-                Session.set('network', 'private');
+                Session.set('network', 'main');
         }
     }
 });
