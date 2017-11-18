@@ -33,8 +33,11 @@ contractVersions = [
 web3.eth.getBlock(0, function(e, res){
     if(!e){
         switch(res.hash) {
-            default:
+            case '0x4d7df65052bb21264d6ad2d6fe2d5578a36be12f71bf8d0559b0c15c4dc539b5':
                 Session.set('network', 'main');
+                break;
+            default:
+                Session.set('network', 'private');
         }
     }
 });

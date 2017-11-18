@@ -25,10 +25,13 @@ Template['layout_header'].helpers({
     */
     'goToSend': function() {
         FlowRouter.watchPathChange();
-        var address = web3.toChecksumAddress(FlowRouter.getParam('address'));
+        var address = web3.toChecksumAddress(FlowRouter.getParam('address'));  
+        var accounts = EthAccounts.find({}).fetch();
+
+        // For some reason the path /send/ doesn't show tokens anymore
         return (address)
             ? FlowRouter.path('sendFrom', {from: address})
-            : FlowRouter.path('send');
+            : FlowRouter.path('sendFrom', {from: accounts[0] ? accounts[0].address : null });
     },
     /**
     Calculates the total balance of all accounts + wallets.
@@ -42,10 +45,7 @@ Template['layout_header'].helpers({
 
         var balance = _.reduce(_.pluck(_.union(accounts, wallets), 'balance'), function(memo, num){ return memo + Number(num); }, 0);
 
-        // set total balance in Mist menu, of no pending confirmation is Present
-        if(typeof mist !== 'undefined' && !PendingConfirmations.findOne({operation: {$exists: true}})) {
-            mist.menu.setBadge(EthTools.formatBalance(balance, '0.00 a','ether') + ' ELLA');
-        }
+        updateMistBadge();
 
         return balance;
     },
@@ -64,9 +64,9 @@ Template['layout_header'].helpers({
     @method (timeSinceBlock)
     */
     'timeSinceBlock': function () {
-
-        if (EthBlocks.latest.timestamp == 0
-            || typeof EthBlocks.latest.timestamp == 'undefined')
+        
+        if (EthBlocks.latest.timestamp == 0 
+            || typeof EthBlocks.latest.timestamp == 'undefined')   
             return false;
 
         var timeSince = moment(EthBlocks.latest.timestamp, "X");
@@ -93,9 +93,9 @@ Template['layout_header'].helpers({
     @method (timeSinceBlockText)
     */
     'timeSinceBlockText': function () {
-
-        if (EthBlocks.latest.timestamp == 0
-            || typeof EthBlocks.latest.timestamp == 'undefined')
+        
+        if (EthBlocks.latest.timestamp == 0 
+            || typeof EthBlocks.latest.timestamp == 'undefined')   
             return TAPi18n.__('wallet.app.texts.waitingForBlocks');
 
         var timeSince = moment(EthBlocks.latest.timestamp, "X");

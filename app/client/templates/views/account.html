@@ -11,8 +11,8 @@
                     {{/if}}
                 {{else}}
                     {{> dapp_identicon identity=address}}
-                    <h1>
-                        <span class="edit-name">{{name}}</span> <i class="edit-icon icon-pencil"></i>
+                    <h1 class="{{ensClass}}">
+                        <span>{{displayName}}</span>
 
                         {{#if $or owners jsonInterface}}
                             <button class="dapp-icon-button delete icon-trash"></button>
@@ -24,11 +24,13 @@
 
             <div class="accounts-page-summary">
                 {{> dapp_identicon identity=address}}
-                <header>
+                <header class="{{ensClass}}">
                     <h1>
-                        <span class="edit-name">{{name}}</span> <i class="edit-icon icon-pencil"></i>
-                        {{#if $or owners jsonInterface}}
-                            <button class="dapp-icon-button delete icon-trash"></button>
+                        {{#if ens}}
+                        <span>{{displayName}}</span>
+                        {{else}}
+                        <em class="edit-name">{{displayName}}</em>
+                        <i class="edit-icon icon-pencil"></i>
                         {{/if}}
                     </h1>
                     <h2 class="copyable-address">{{walletIcon}}
@@ -68,15 +70,26 @@
 
                 {{#if owners}}
                     <!-- Wallet infos -->
+
                     <div class="row clear wallet-info">
                         {{#if showDailyLimit}}
                             <div class="col col-4 mobile-full">
-                                {{#if $gte version 1}}
-                                    <h3>{{i18n "wallet.accounts.dailyLimit"}} <span style="font-weight: 200;">{{dapp_formatBalance dailyLimit "0,0.00 unit"}}</span></h3>
-                                    {{dapp_formatBalance availableToday "0,0.00 unit"}} {{i18n "wallet.accounts.dailyLimitRemaining"}}
+                                {{#if $neq unit 'ether'}}
+                                    {{#if $gte version 1}}
+                                        <h3>{{i18n "wallet.accounts.dailyLimit"}} <span style="font-weight: 200;">{{dapp_formatBalance dailyLimit "0,0.00 unit"}}</span></h3>
+                                        {{dapp_formatBalance availableToday "0,0.00 unit"}} {{i18n "wallet.accounts.dailyLimitRemaining"}}
+                                    {{else}}
+                                        <h3>{{i18n "wallet.accounts.dailyLimit"}}</h3>
+                                        {{dapp_formatBalance dailyLimit "0,0.00 unit"}}
+                                    {{/if}}
                                 {{else}}
-                                    <h3>{{i18n "wallet.accounts.dailyLimit"}}</h3>
-                                    {{dapp_formatBalance dailyLimit "0,0.00 unit"}}
+                                    {{#if $gte version 1}}
+                                        <h3>{{i18n "wallet.accounts.dailyLimit"}} <span style="font-weight: 200;">{{dapp_formatBalance dailyLimit "0,0.00 " "ether"}} ELLA</span></h3>
+                                        {{dapp_formatBalance availableToday "0,0.00 " "ether"}} ELLA {{i18n "wallet.accounts.dailyLimitRemaining"}}
+                                    {{else}}
+                                        <h3>{{i18n "wallet.accounts.dailyLimit"}}</h3>
+                                        {{dapp_formatBalance dailyLimit "0,0.00 " "ether"}} ELLA
+                                    {{/if}}
                                 {{/if}}
                             </div>
                         {{/if}}
@@ -94,6 +107,7 @@
                             {{/each}}
                         </div>
                     </div>
+
                     <!-- Account infos -->
                     <div class="account-info">
                         <h3>{{i18n "wallet.app.texts.note"}}</h3>
@@ -106,6 +120,7 @@
                     <div class="account-info">
                         <h3>{{i18n "wallet.app.texts.note"}}</h3>
                         <p>{{{i18n "wallet.accounts.accountNote"}}}</p>
+                        <p><strong>{{i18n "wallet.accounts.outOfSyncNote"}}</strong></p>
                     </div>
                 {{/if}}
 
@@ -121,14 +136,8 @@
                                 {{i18n "wallet.accounts.buttons.deposit"}}
                             </a>
                         </li>
-                        <!-- {{#if $eq ($.Session.get "network") "main"}}
-                            <li>
-                                <a href="https://shapeshift.io/shifty.html?destination={{address}}&amp;output=ETC&amp;apiKey=eb11abbe6b66e04335305a6bb5a7e614b30e3251380445653f811b068f500bea74edaade30bcf23b99bac4bcfb9e9a4fa0c0d11ba98f024769e7607afcac038f" target="_popup" data-popup-width="" data-popup-height="">
-                                    <i class="icon-bitcoin"></i>
-                                    {{i18n "wallet.accounts.buttons.depositBitcoin"}}
-                                </a>
-                            </li>
-                        {{/if}} -->
+
+
                         <li>
                             <button class="copy-to-clipboard-button">
                                 <i class="icon-docs"></i>
@@ -149,6 +158,7 @@
                                 </button>
                             </li>
                         {{/if}}
+
                     </ul>
                 </nav>
             </aside>
@@ -158,7 +168,9 @@
                 {{> elements_executeContract address=address jsonInterface=jsonInterface}}
             {{/if}}
 
+
             <div class="accounts-transactions">
+
                 {{#if pendingConfirmations}}
                     <h2>{{i18n 'wallet.transactions.pendingConfirmations'}}</h2>
 
@@ -173,7 +185,8 @@
 
                 {{#with customContract}}
                     <h2>{{i18n 'wallet.events.latest'}}</h2>
-                    <br />
+                    <br>
+
                     <div>
                         <input type="checkbox" id="watch-events-checkbox" class="toggle-watch-events" checked="{{TemplateVar.get 'watchEvents'}}">
                         <label for="watch-events-checkbox">{{i18n "wallet.contracts.buttons.watchContractEvents"}}</label>
@@ -184,6 +197,7 @@
                             {{> spinner}}
                         </div>
                     {{/if}}
+
                     {{> elements_event_table ids=contractEvents}}
                 {{/with}}
             </div>

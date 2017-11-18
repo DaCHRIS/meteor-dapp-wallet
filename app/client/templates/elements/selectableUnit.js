@@ -19,9 +19,33 @@ The available units
 selectableUnits = [{
     text: 'ELLA',
     value: 'ether'
-}];
+}/*,
+{
+    text: 'FINNEY', //(µΞ)
+    value: 'finney'
+},
+{
+    text: 'BTC',
+    value: 'btc'
+},
+{
+    text: 'USD',
+    value: 'usd'
+},
+{
+    text: 'EUR',
+    value: 'eur'
+},
+{
+    text: 'GBP',
+    value: 'gbp'
+},
+{
+    text: 'BRL',
+    value: 'brl'
+}*/];
 
-
+/*
 // Aprils fool
 if (moment().format('MM-DD')=='04-01') {
     selectableUnits.push({ text: 'SZABO', value: 'szabo'},
@@ -41,7 +65,7 @@ if (moment().format('MM-DD')=='04-01') {
 } else if (moment().format('MM-DD')=='12-26') {
     selectableUnits.push({ text: 'BABBAGE', value: 'babbage'})
 }
-
+*/
 
 Template['elements_selectableUnit'].helpers({
     /**
@@ -64,6 +88,14 @@ Template['elements_selectableUnit'].helpers({
     */
     'units': function(){
         return selectableUnits;
+    },
+    /**
+    Can select units
+
+    @method (selectedUnit)
+    */
+    'selectable': function(){
+        return Session.get('network') == 'main';
     }
 });
 

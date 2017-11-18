@@ -36,8 +36,8 @@ Check if in mist and in mist mode
 
 @method (isMistMode)
 **/
-Template.registerHelper('isMistMode', function(){
-    return (typeof mist !== 'undefined' && mist.mode === 'mist');
+Template.registerHelper('isWalletMode', function(){
+    return window.mistMode === 'wallet' || typeof mist === 'undefined'; // also show network info in normal browsers
 });
 
 /**
@@ -113,12 +113,11 @@ Returns a list of accounts and wallets sorted by balance
 @method (latestBlock)
 **/
 Template.registerHelper('selectAccounts', function(hideWallets){
-    var accounts = EthAccounts.find({}, {sort: {name: 1}}).fetch();
+    var accounts = EthAccounts.find({balance:{$ne:"0"}}, {sort: {balance: 1}}).fetch();
     
     if(hideWallets !== true)
-        accounts = _.union(Wallets.find({owners: {$in: _.pluck(accounts, 'address')}, address: {$exists: true}}, {sort: {name: 1}}).fetch(), accounts);
-    
-    accounts.sort(Helpers.sortByBalance);
+        accounts = _.union(Wallets.find({owners: {$in: _.pluck(EthAccounts.find().fetch(), 'address')}, address: {$exists: true}}, {sort: {name: 1}}).fetch(), accounts);
+
     return accounts;
 });
 

@@ -3,6 +3,16 @@ if(location.hostname !== 'localhost' && location.hostname !== '127.0.0.1')
     Meteor.disconnect();
 
 
+// Make sure the example contract code is up to date
+var contractSource = localStorage.getItem('contractSource');
+
+if (contractSource  // repopulate placeholder contract if:
+    && (contractSource === ""  // source is empty or
+    || (contractSource.indexOf(Helpers.getDefaultContractExample(true)) !== -1)  // default 'MyContract' exists and
+    && contractSource.split('contract ').length-1 === 1)) {  // 'MyContract' is the only contract
+    localStorage.setItem('contractSource', Helpers.getDefaultContractExample());
+}
+
 
 Meteor.Spinner.options = {
     lines: 17, // The number of lines to draw
@@ -41,16 +51,16 @@ web3.eth.isSyncing(function(error, syncing) {
             });
             collectionObservers = [];
 
-        
+
         } else if(_.isObject(syncing)) {
-            
+
             syncing.progress = Math.floor(((syncing.currentBlock - syncing.startingBlock) / (syncing.highestBlock - syncing.startingBlock)) * 100);
             syncing.blockDiff = numeral(syncing.highestBlock - syncing.currentBlock).format('0,0');
 
             TemplateVar.setTo('header nav', 'syncing', syncing);
-            
+
         } else {
-            console.timeEnd('nodeRestarted')            
+            console.timeEnd('nodeRestarted')
             console.log('Restart app operation again');
 
             TemplateVar.setTo('header nav', 'syncing', false);
@@ -68,8 +78,11 @@ var connect = function(){
 
         // only start app operation, when the node is not syncing (or the eth_syncing property doesn't exists)
         web3.eth.getSyncing(function(e, sync) {
-            if(e || !sync)
+            if(e || !sync) {
                 connectToNode();
+            } else {
+                EthAccounts.init();
+            }
         });
 
     } else {
@@ -77,10 +90,10 @@ var connect = function(){
         // make sure the modal is rendered after all routes are executed
         Meteor.setTimeout(function(){
             // if in mist, tell to start geth, otherwise start with RPC
-            var gethRPC = (web3.admin) ? 'geth' : 'geth --rpc --rpccorsdomain "'+window.location.protocol + '//' + window.location.host+'"';
+            var gethRPC = (web3.admin) ? 'geth' : 'ggeth --rpc --rpccorsdomain "'+window.location.protocol + '//' + window.location.host+'"';
 
             EthElements.Modal.question({
-                text: new Spacebars.SafeString(TAPi18n.__('wallet.app.texts.connectionError' + (web3.admin ? 'Mist' : 'Browser'), 
+                text: new Spacebars.SafeString(TAPi18n.__('wallet.app.texts.connectionError' + (web3.admin ? 'Mist' : 'Browser'),
                     {node: gethRPC})),
                 ok: function(){
                     Tracker.afterFlush(function(){
